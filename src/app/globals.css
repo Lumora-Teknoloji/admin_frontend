@@ -1,0 +1,654 @@
+@import "tailwindcss";
+
+:root {
+    --background: #0f1115;
+    --foreground: #e5e7eb;
+}
+
+body {
+    color: var(--foreground);
+    background: var(--background);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+    .text-balance {
+        text-wrap: balance;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0f1115;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #1f2937;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #374151;
+}
+
+/* Premium Animations */
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+.animate-float {
+    animation: float 4s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+
+    0%,
+    100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
+
+.animate-pulse-glow {
+    animation: pulse-glow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes slow-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-slow-spin {
+    animation: slow-spin 10s linear infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.animate-shimmer {
+    background: linear-gradient(90deg, transparent 25%, rgba(255, 255, 255, 0.1) 50%, transparent 75%);
+    background-size: 200% 100%;
+    animation: shimmer 3s infinite linear;
+}
+
+.glass-panel {
+    background: rgba(22, 25, 30, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.glass-panel-hover:hover {
+    background: rgba(30, 35, 45, 0.7);
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+}
+
+@keyframes pulse-subtle {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.animate-pulse-subtle {
+    animation: pulse-subtle 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes value-pop {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.15);
+        filter: brightness(1.5);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.animate-value-pop {
+    animation: value-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes glow-hit {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+
+    50% {
+        box-shadow: 0 0 20px 2px rgba(255, 255, 255, 0.1);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+.animate-glow-hit {
+    animation: glow-hit 0.5s ease-out;
+}
+
+/* ═══════════════════════════════════════════════════════
+   BOT STATE ANIMATIONS — Premium State Effects
+   ═══════════════════════════════════════════════════════ */
+
+/* ☕ Cooldown / İnsani Mola — Calm breathing glow */
+@keyframes breathe-glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 15px rgba(14, 165, 233, 0.08), inset 0 0 20px rgba(14, 165, 233, 0.03);
+        border-color: rgba(14, 165, 233, 0.2);
+    }
+
+    50% {
+        box-shadow: 0 0 30px rgba(14, 165, 233, 0.18), inset 0 0 40px rgba(14, 165, 233, 0.06);
+        border-color: rgba(14, 165, 233, 0.4);
+    }
+}
+
+.animate-breathe {
+    animation: breathe-glow 3s ease-in-out infinite;
+}
+
+@keyframes dot-breathe {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.6;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 1;
+    }
+}
+
+.animate-dot-breathe {
+    animation: dot-breathe 2s ease-in-out infinite;
+}
+
+/* ⏳ IP Rotation — Ripple wave pulse */
+@keyframes ripple-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.25), 0 0 15px rgba(245, 158, 11, 0.1);
+    }
+
+    50% {
+        box-shadow: 0 0 0 8px rgba(245, 158, 11, 0), 0 0 25px rgba(245, 158, 11, 0.2);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0), 0 0 15px rgba(245, 158, 11, 0.1);
+    }
+}
+
+.animate-ripple {
+    animation: ripple-pulse 1.8s ease-out infinite;
+}
+
+@keyframes border-travel {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    100% {
+        background-position: 200% 50%;
+    }
+}
+
+.animate-border-travel {
+    background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.5), transparent);
+    background-size: 200% 100%;
+    animation: border-travel 2s linear infinite;
+}
+
+/* 🚫 Blocked — Alarm shake + emergency red */
+@keyframes alarm-shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    10% {
+        transform: translateX(-2px) rotate(-0.5deg);
+    }
+
+    20% {
+        transform: translateX(2px) rotate(0.5deg);
+    }
+
+    30% {
+        transform: translateX(-2px);
+    }
+
+    40% {
+        transform: translateX(2px);
+    }
+
+    50% {
+        transform: translateX(0);
+    }
+}
+
+.animate-alarm {
+    animation: alarm-shake 3s ease-in-out infinite;
+}
+
+@keyframes red-pulse-border {
+
+    0%,
+    100% {
+        border-color: rgba(239, 68, 68, 0.3);
+        box-shadow: 0 0 20px rgba(239, 68, 68, 0.1);
+    }
+
+    50% {
+        border-color: rgba(239, 68, 68, 0.7);
+        box-shadow: 0 0 35px rgba(239, 68, 68, 0.25);
+    }
+}
+
+.animate-red-pulse {
+    animation: red-pulse-border 1.5s ease-in-out infinite;
+}
+
+/* ♻️ Context Refresh — Spinning orb + violet shimmer */
+@keyframes refresh-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-refresh-spin {
+    animation: refresh-spin 2s linear infinite;
+}
+
+@keyframes violet-shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.animate-violet-shimmer {
+    background: linear-gradient(90deg, transparent 25%, rgba(139, 92, 246, 0.15) 50%, transparent 75%);
+    background-size: 200% 100%;
+    animation: violet-shimmer 2.5s linear infinite;
+}
+
+/* ⚡ Speed Mode — Energy wave */
+@keyframes energy-wave {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(217, 70, 239, 0.1), 0 0 40px rgba(217, 70, 239, 0.05);
+    }
+
+    25% {
+        box-shadow: 0 0 30px rgba(217, 70, 239, 0.2), 0 0 60px rgba(217, 70, 239, 0.1);
+    }
+
+    50% {
+        box-shadow: 0 0 25px rgba(217, 70, 239, 0.15), 0 0 50px rgba(217, 70, 239, 0.08);
+    }
+
+    75% {
+        box-shadow: 0 0 35px rgba(217, 70, 239, 0.25), 0 0 70px rgba(217, 70, 239, 0.12);
+    }
+}
+
+.animate-energy {
+    animation: energy-wave 2s ease-in-out infinite;
+}
+
+/* 💤 Queue Empty — Sleep breathe */
+@keyframes sleep-breathe {
+
+    0%,
+    100% {
+        opacity: 0.4;
+        transform: scale(0.98);
+    }
+
+    50% {
+        opacity: 0.7;
+        transform: scale(1);
+    }
+}
+
+.animate-sleep {
+    animation: sleep-breathe 4s ease-in-out infinite;
+}
+
+/* 🚨 Critical — Emergency flash */
+@keyframes emergency-flash {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(239, 68, 68, 0.15);
+        border-color: rgba(239, 68, 68, 0.4);
+    }
+
+    25% {
+        box-shadow: 0 0 45px rgba(239, 68, 68, 0.35);
+        border-color: rgba(239, 68, 68, 0.8);
+    }
+
+    75% {
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.1);
+        border-color: rgba(239, 68, 68, 0.3);
+    }
+}
+
+.animate-emergency {
+    animation: emergency-flash 1.2s ease-in-out infinite;
+}
+
+/* ⚠️ Error Streak — Warning blink */
+@keyframes warning-blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+}
+
+.animate-warning-blink {
+    animation: warning-blink 2s ease-in-out infinite;
+}
+
+/* Progress bar glow effect */
+@keyframes progress-glow {
+
+    0%,
+    100% {
+        filter: brightness(1) drop-shadow(0 0 2px currentColor);
+    }
+
+    50% {
+        filter: brightness(1.3) drop-shadow(0 0 6px currentColor);
+    }
+}
+
+.animate-progress-glow {
+    animation: progress-glow 2s ease-in-out infinite;
+}
+
+/* Icon float for waiting states */
+@keyframes icon-float {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-3px);
+    }
+}
+
+.animate-icon-float {
+    animation: icon-float 2.5s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════
+   PRODUCT ARRIVAL — Premium New Product Animations
+   ═══════════════════════════════════════════════════════ */
+
+/* Entry: Scale + Slide + Fade */
+@keyframes product-arrive {
+    0% {
+        opacity: 0;
+        transform: translateY(-12px) scaleY(0.92);
+        filter: brightness(2);
+    }
+
+    40% {
+        opacity: 1;
+        transform: translateY(2px) scaleY(1.01);
+        filter: brightness(1.4);
+    }
+
+    70% {
+        transform: translateY(-1px) scaleY(1);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scaleY(1);
+        filter: brightness(1);
+    }
+}
+
+/* Horizontal scan-line sweep */
+@keyframes neon-scanline {
+    0% {
+        background-position: -100% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Neon glow that fades out */
+@keyframes glow-fade {
+    0% {
+        box-shadow: 0 0 20px rgba(34, 197, 94, 0.3), 0 0 60px rgba(34, 197, 94, 0.1), inset 0 0 30px rgba(34, 197, 94, 0.05);
+        border-color: rgba(34, 197, 94, 0.6);
+    }
+
+    30% {
+        box-shadow: 0 0 25px rgba(34, 197, 94, 0.25), 0 0 50px rgba(34, 197, 94, 0.08), inset 0 0 25px rgba(34, 197, 94, 0.04);
+        border-color: rgba(34, 197, 94, 0.4);
+    }
+
+    100% {
+        box-shadow: 0 0 0 rgba(34, 197, 94, 0), 0 0 0 rgba(34, 197, 94, 0), inset 0 0 0 rgba(34, 197, 94, 0);
+        border-color: transparent;
+    }
+}
+
+/* Left border grow */
+@keyframes border-grow {
+    0% {
+        height: 0;
+        opacity: 0;
+    }
+
+    30% {
+        height: 100%;
+        opacity: 1;
+    }
+
+    100% {
+        height: 100%;
+        opacity: 0;
+    }
+}
+
+/* Combined class for new product rows — Base */
+.product-row-new {
+    animation: product-arrive 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    position: relative;
+}
+
+/* ═══ NORMAL BOT — Emerald Green ═══ */
+.product-row-new.bot-normal {
+    border-left: 3px solid rgba(34, 197, 94, 0.6);
+    background: linear-gradient(90deg, rgba(34, 197, 94, 0.08) 0%, rgba(34, 197, 94, 0.02) 30%, transparent 60%);
+}
+
+.product-row-new.bot-normal::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(34, 197, 94, 0.12) 45%, rgba(52, 211, 153, 0.2) 50%, rgba(34, 197, 94, 0.12) 55%, transparent 100%);
+    background-size: 200% 100%;
+    animation: neon-scanline 1.2s ease-out 0.3s forwards;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* ═══ WORKER BOT — Electric Blue ═══ */
+.product-row-new.bot-worker {
+    border-left: 3px solid rgba(59, 130, 246, 0.7);
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.02) 30%, transparent 60%);
+}
+
+.product-row-new.bot-worker::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(59, 130, 246, 0.12) 45%, rgba(96, 165, 250, 0.22) 50%, rgba(59, 130, 246, 0.12) 55%, transparent 100%);
+    background-size: 200% 100%;
+    animation: neon-scanline 1.2s ease-out 0.3s forwards;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* ═══ LINKER BOT — Amber Orange ═══ */
+.product-row-new.bot-linker {
+    border-left: 3px solid rgba(245, 158, 11, 0.7);
+    background: linear-gradient(90deg, rgba(245, 158, 11, 0.08) 0%, rgba(245, 158, 11, 0.02) 30%, transparent 60%);
+}
+
+.product-row-new.bot-linker::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(245, 158, 11, 0.12) 45%, rgba(251, 191, 36, 0.22) 50%, rgba(245, 158, 11, 0.12) 55%, transparent 100%);
+    background-size: 200% 100%;
+    animation: neon-scanline 1.2s ease-out 0.3s forwards;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Glow animations per bot type */
+@keyframes glow-fade-green {
+    0% {
+        box-shadow: 0 0 20px rgba(34, 197, 94, 0.3), 0 0 60px rgba(34, 197, 94, 0.1);
+    }
+
+    100% {
+        box-shadow: 0 0 0 transparent;
+    }
+}
+
+@keyframes glow-fade-blue {
+    0% {
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), 0 0 60px rgba(59, 130, 246, 0.1);
+    }
+
+    100% {
+        box-shadow: 0 0 0 transparent;
+    }
+}
+
+@keyframes glow-fade-orange {
+    0% {
+        box-shadow: 0 0 20px rgba(245, 158, 11, 0.3), 0 0 60px rgba(245, 158, 11, 0.1);
+    }
+
+    100% {
+        box-shadow: 0 0 0 transparent;
+    }
+}
+
+.glow-normal {
+    animation: glow-fade-green 5s ease-out forwards;
+}
+
+.glow-worker {
+    animation: glow-fade-blue 5s ease-out forwards;
+}
+
+.glow-linker {
+    animation: glow-fade-orange 5s ease-out forwards;
+}
+
+/* Badge pulse for YENİ */
+@keyframes badge-pop {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.animate-badge-pop {
+    animation: badge-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
