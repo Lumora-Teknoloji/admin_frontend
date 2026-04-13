@@ -1,5 +1,6 @@
 import { request } from "@/lib/api";
 
+// ─── Eski Agent modeli (heartbeat tabanlı) ────────────────────────────────────
 export interface Agent {
     id: number;
     name: string;
@@ -39,6 +40,27 @@ export interface LogEntry {
     timestamp: string;
 }
 
+// ─── Yeni Redis Bot modeli ────────────────────────────────────────────────────
+export interface RedisQueueStats {
+    pending: number;
+    processing: number;
+    retry: number;
+    results_buffer: number;
+    scraped_total: number;
+    throughput_estimate: { desc: string };
+}
+
+export interface RedisBotInfo {
+    status: "active" | "waiting" | "error" | "stopped";
+    last_seen: string;       // unix timestamp string
+    last_seen_ago: number;   // seconds
+    scraped: string;
+    rate_per_min: string;
+}
+
+export type RedisBotsMap = Record<string, RedisBotInfo>;
+
+// ─── Agent API ────────────────────────────────────────────────────────────────
 export const agentApi = {
     list: () => request<Agent[]>("/agents/list"),
 
@@ -93,5 +115,32 @@ export const agentApi = {
         request<{ status: string; agent_id: number; schedule_config: any }>(`/agents/${agentId}/schedule`, {
             method: "PATCH",
             body: JSON.stringify(config),
+        }),
+};
+
+// ─── Redis Queue API (yeni stateless bot mimarisi) ────────────────────────────
+const AGENT_SECRET = process.env.NEXT_PUBLIC_AGENT_SECRET ?? "";
+
+export const redisApi = {
+    getStats: () =>
+        request<RedisQueueStats>("/redis/queue/stats", {
+            headers: { "X-Agent-Secret": AGENT_SECRET },
+        }),
+
+    getBots: () =>
+        request<RedisBotsMap>("/redis/bots", {
+            headers: { "X-Agent-Secret": AGENT_SECRET },
+        }),
+
+    recover: () =>
+        request<{ recovered: number }>("/redis/queue/recover", {
+            method: "POST",
+            headers: { "X-Agent-Secret": AGENT_SECRET },
+        }),
+
+    flushRetry: () =>
+        request<{ moved: number }>("/redis/queue/flush_retry", {
+            method: "POST",
+            headers: { "X-Agent-Secret": AGENT_SECRET },
         }),
 };
