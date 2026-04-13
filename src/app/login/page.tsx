@@ -20,9 +20,9 @@ export default function LoginPage() {
 
         try {
             await authApi.login(username, password);
-            // Force hard reload to update middleware state
             const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '/bot-admin';
-            window.location.href = basePath;
+            router.refresh();
+            router.replace(basePath || '/');
         } catch (err: any) {
             setError(err.message || "Giriş yapılamadı. Bilgilerinizi kontrol edin.");
             setIsLoading(false);

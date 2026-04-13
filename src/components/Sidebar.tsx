@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, ScrollText, Settings, LogOut, Disc, Package, Monitor } from "lucide-react"; // Updated icons
 import { cn } from "@/lib/utils";
 import { authApi } from "@/lib/api";
@@ -38,6 +38,7 @@ const menuItems = [
 
 export function Sidebar() {
     const pathname = usePathname();
+    const router = useRouter();
     const [user, setUser] = useState<{ username: string; full_name?: string } | null>(null);
     const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '/bot-admin';
 
@@ -121,11 +122,13 @@ export function Sidebar() {
                     onClick={async () => {
                         try {
                             await authApi.logout();
-                            window.location.href = `${basePath}/login`;
+                            router.refresh();
+                            router.replace(`${basePath}/login`);
                         } catch (err) {
                             console.error("Logout failed:", err);
                             // Fallback in case of network error
-                            window.location.href = `${basePath}/login`;
+                            router.refresh();
+                            router.replace(`${basePath}/login`);
                         }
                     }}
                     className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#2a2d35] hover:bg-[#32363f] px-4 py-3 text-xs font-bold text-gray-400 hover:text-white transition-all border-l-4 border-l-[#a16207] shadow-lg"

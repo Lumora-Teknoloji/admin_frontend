@@ -10,51 +10,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface Product {
-    id: number;
-    product_code: string | null;
-    name: string | null;
-    brand: string | null;
-    seller: string | null;
-    url: string | null;
-    image_url: string | null;
-    category_tag: string | null;
-    category: string | null;
-    attributes: Record<string, any> | null;
-    review_summary: string | null;
-    sizes: string[] | null;
-    last_price: number | null;
-    last_discount_rate: number | null;
-    avg_sales_velocity: number | null;
-    first_seen_at: string | null;
-    last_scraped_at: string | null;
-    favorite_count: number | null;
-    cart_count: number | null;
-    view_count: number | null;
-    avg_rating: number | null;
-    rating_count: number | null;
-    qa_count: number | null;
-    // Price details
-    original_price: number | null;
-    discounted_price: number | null;
-    // Search ranking
-    page_number: number | null;
-    search_rank: number | null;
-    absolute_rank: number | null;
-    search_term: string | null;
-    // Bot info
-    bot_mode: string | null;
-    task_name: string | null;
-    scrape_mode: string | null;
-}
-
-interface ProductListResponse {
-    items: Product[];
-    total: number;
-    page: number;
-    page_size: number;
-    total_pages: number;
-}
+import { Product, ProductListResponse } from "@/types";
 
 export default function ProductsPage() {
     const [products, setProducts] = useState<Product[]>([]);

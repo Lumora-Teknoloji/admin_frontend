@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { botApi, DetailedError } from "@/services/botApi";
-import { cn } from "@/lib/utils";
+import { cn, parsePercentage } from "@/lib/utils";
 import {
     Terminal,
     RefreshCw,
@@ -19,34 +19,7 @@ import {
     Server
 } from "lucide-react";
 
-interface LiveProduct {
-    id: number;
-    name: string;
-    brand: string;
-    price: string;
-    url: string;
-    scraped_at: string;
-    bot: string;
-    platform: string;
-    image: string | null;
-}
-
-interface SystemHealth {
-    status: string;
-    database: {
-        connection: string;
-        total_products: number;
-        total_tasks: number;
-        total_logs: number;
-    };
-    server: {
-        cpu: string;
-        memory: string;
-        disk: string;
-        os: string;
-        uptime: string;
-    };
-}
+import { LiveProduct, SystemHealth } from "@/types";
 
 function LogsContent() {
     const searchParams = useSearchParams();
@@ -580,7 +553,7 @@ function LogsContent() {
                             <div className="w-full bg-gray-900 h-1.5 rounded-full mt-3 overflow-hidden border border-white/[0.03]">
                                 <div
                                     className="bg-gradient-to-r from-blue-500 to-cyan-400 h-full transition-all duration-1000 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.3)]"
-                                    style={{ width: health?.server.cpu || '0%' }}
+                                    style={{ width: `${parsePercentage(health?.server.cpu)}%` }}
                                 />
                             </div>
                         </div>
@@ -600,7 +573,7 @@ function LogsContent() {
                                         <span className="text-white">{health?.server.memory}</span>
                                     </div>
                                     <div className="w-full bg-gray-900 h-1.5 rounded-full overflow-hidden border border-white/[0.03]">
-                                        <div className="bg-gradient-to-r from-emerald-500 to-green-400 h-full rounded-full shadow-[0_0_8px_rgba(16,185,129,0.3)]" style={{ width: health?.server.memory?.split('%')[0] + '%' || '0%' }} />
+                                        <div className="bg-gradient-to-r from-emerald-500 to-green-400 h-full rounded-full shadow-[0_0_8px_rgba(16,185,129,0.3)]" style={{ width: `${parsePercentage(health?.server.memory)}%` }} />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
@@ -609,7 +582,7 @@ function LogsContent() {
                                         <span className="text-white">{health?.server.disk}</span>
                                     </div>
                                     <div className="w-full bg-gray-900 h-1.5 rounded-full overflow-hidden border border-white/[0.03]">
-                                        <div className="bg-gradient-to-r from-amber-500 to-orange-400 h-full rounded-full shadow-[0_0_8px_rgba(245,158,11,0.3)]" style={{ width: health?.server.disk?.split('%')[0] + '%' || '0%' }} />
+                                        <div className="bg-gradient-to-r from-amber-500 to-orange-400 h-full rounded-full shadow-[0_0_8px_rgba(245,158,11,0.3)]" style={{ width: `${parsePercentage(health?.server.disk)}%` }} />
                                     </div>
                                 </div>
                             </div>

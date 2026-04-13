@@ -4,43 +4,22 @@ import { useState, useEffect } from "react";
 import { LayoutDashboard, Zap, Package, Activity, Clock, Server, RefreshCw, TrendingUp, Star, Heart, ShoppingCart, BarChart3 } from "lucide-react";
 import Link from "next/link";
 import { StatsCard } from "@/components/StatsCard";
-import { botApi, DataQuality } from "@/services/botApi";
+import { botApi, DataQuality, SystemHealthResponse, ReportSummaryResponse } from "@/services/botApi";
 import { request } from "@/lib/api";
-import { cn } from "@/lib/utils";
-
-interface HealthData {
-  status: string;
-  pulse?: {
-    status: "healthy" | "busy" | "critical" | "error";
-    message: string;
-  };
-  database: {
-    connection: string;
-    total_products: number;
-    total_tasks: number;
-    total_logs: number;
-  };
-  server: {
-    cpu: string;
-    memory: string;
-    disk: string;
-    os: string;
-    uptime: string;
-  };
-}
+import { cn, parsePercentage } from "@/lib/utils";
 
 export default function Home() {
-  const [health, setHealth] = useState<HealthData | null>(null);
+  const [health, setHealth] = useState<SystemHealthResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [autoRefresh, setAutoRefresh] = useState(true);
-  const [report, setReport] = useState<any>(null);
+  const [report, setReport] = useState<ReportSummaryResponse | null>(null);
   const [quality, setQuality] = useState<DataQuality | null>(null);
 
   const fetchData = async () => {
     try {
       const [data, reportData, qualityData] = await Promise.all([
         botApi.getSystemHealth(),
-        request<any>("/products/reports/summary?days=7").catch(() => null),
+        botApi.getReportSummary(7).catch(() => null),
         botApi.getDataQuality().catch(() => null),
       ]);
       setHealth(data);
@@ -60,7 +39,7 @@ export default function Home() {
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (autoRefresh) {
-      interval = setInterval(fetchData, 2000);
+      interval = setInterval(fetchData, 15000);
     }
     return () => clearInterval(interval);
   }, [autoRefresh]);
@@ -171,7 +150,7 @@ export default function Home() {
               <div className="w-full bg-black/40 h-2 rounded-full overflow-hidden border border-gray-800/50">
                 <div
                   className="bg-blue-500 h-full transition-all duration-1000 shadow-[0_0_15px_rgba(59,130,246,0.5)]"
-                  style={{ width: health?.server?.cpu || '0%' }}
+                  style={{ width: `${parsePercentage(health?.server?.cpu)}%` }}
                 />
               </div>
             </div>
@@ -187,7 +166,7 @@ export default function Home() {
               <div className="w-full bg-black/40 h-2 rounded-full overflow-hidden border border-gray-800/50">
                 <div
                   className="bg-emerald-500 h-full transition-all duration-1000 shadow-[0_0_15px_rgba(16,185,129,0.5)]"
-                  style={{ width: (health?.server?.memory?.split('%')[0] || '0') + '%' }}
+                  style={{ width: `${parsePercentage(health?.server?.memory)}%` }}
                 />
               </div>
             </div>
@@ -203,7 +182,7 @@ export default function Home() {
               <div className="w-full bg-black/40 h-2 rounded-full overflow-hidden border border-gray-800/50">
                 <div
                   className="bg-orange-500 h-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.4)]"
-                  style={{ width: (health?.server?.disk?.split('%')[0] || '0') + '%' }}
+                  style={{ width: `${parsePercentage(health?.server?.disk)}%` }}
                 />
               </div>
             </div>
@@ -306,7 +285,7 @@ export default function Home() {
                 <div className="mt-6 pt-4 border-t border-gray-800">
                   <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3">En Çok Ürün İçeren Markalar</div>
                   <div className="space-y-2">
-                    {report.top_brands.slice(0, 5).map((b: any, i: number) => (
+                    {report.top_brands.slice(0, 5).map((b, i: number) => (
                       <div key={i} className="flex items-center gap-3">
                         <span className="text-[10px] text-gray-600 w-4 font-mono">{i + 1}</span>
                         <div className="flex-1 h-1.5 bg-gray-800 rounded-full overflow-hidden">

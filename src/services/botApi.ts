@@ -1,61 +1,6 @@
-// Types
-export interface BotStats {
-    scraped: number;
-    validated: number;
-    errors: number;
-    processed: number;
-}
+import { Bot, BotStats, DetailedError, LogsResponse, BotSettingsUpdate, ReportSummaryResponse, SystemHealthResponse } from "@/types";
 
-export interface Bot {
-    id: number;
-    name: string;
-    platform: string;
-    status: "running" | "stopped" | "error" | "idle" | "worker_running";
-    keyword: string;
-    mode: "linker" | "worker" | "normal" | "review";
-    source_task_id?: number;
-    source_bot_name?: string;
-    start_time: string;
-    end_time: string;
-    page_limit: number;
-    is_active: boolean;
-    pending_links: number;
-    pages_scraped?: number;
-    bot_state?: "scraping" | "waiting_ip" | "blocked" | "cooldown" | "queue_empty" | "critical" | "error_streak" | "context_refresh" | "speed_mode" | "api_mode" | "idle";
-    state_message?: string;
-    state_countdown?: number;
-    state_started_at?: string;
-    uptime_seconds?: number;
-    session_started_at?: string;
-    stats: BotStats;
-    last_message?: string;
-    last_product_url?: string;
-    is_critical?: boolean;
-    last_error?: string;
-    use_proxy?: boolean;
-}
-
-export interface DetailedError {
-    id: number;
-    task_name: string;
-    mode: string;
-    error: string;
-    screenshot: string | null;
-    date: string;
-}
-
-export interface LogsResponse {
-    logs: string[];
-    detailed_errors: DetailedError[];
-}
-
-export interface BotSettingsUpdate {
-    keyword?: string;
-    start_time?: string;
-    end_time?: string;
-    page_limit?: number;
-    is_active?: boolean;
-}
+export * from "@/types";
 
 // API Functions
 // API Functions
@@ -97,8 +42,8 @@ export const botApi = {
             .catch(() => ({ total_products: 0, total_scraped: 0, daily_scraped: 0, active_bots: 0, system_health: 0, pending_links: 0, last_scrape_date: null })),
 
     // Create a new bot task
-    createBot: (data: any) =>
-        request<any>("/scraper/tasks", {
+    createBot: (data: unknown) =>
+        request<{ id?: number; message?: string; detail?: string; [key: string]: unknown }>("/scraper/tasks", {
             method: "POST",
             body: JSON.stringify(data),
         }).then(result => ({ ...result, success: !!result.id })),
@@ -110,7 +55,7 @@ export const botApi = {
             .catch(err => ({ success: false, message: err.message })),
 
     // Start bot in worker mode
-    startWorker: (botId: number) => request<any>(`/scraper/bots/${botId}/worker`, { method: "POST" }),
+    startWorker: (botId: number) => request<{ success: boolean; message?: string }>(`/scraper/bots/${botId}/worker`, { method: "POST" }),
 
     // Activate speed mode (max 30 minutes)
     activateSpeedMode: (botId: number, minutes: number = 30) =>
@@ -131,7 +76,7 @@ export const botApi = {
         ),
 
     // Get live products feed
-    getLiveProducts: (limit: number = 50) => request<any[]>(`/scraper/live-products?limit=${limit}`).catch(() => []),
+    getLiveProducts: (limit: number = 50) => request<unknown[]>(`/scraper/live-products?limit=${limit}`).catch(() => []),
 
     // Delete single log
     deleteLog: (id: number) => request<{ success: boolean }>(`/scraper/logs/${id}`, { method: "DELETE" }),
@@ -141,8 +86,8 @@ export const botApi = {
 
     // Get deep system health metrics
     getSystemHealth: () =>
-        request<any>("/scraper/system/health")
-            .catch(() => ({ status: "offline", database: { connection: "error" } })),
+        request<SystemHealthResponse>("/scraper/system/health")
+            .catch(() => ({ status: "offline", database: { connection: "error" } } as unknown as SystemHealthResponse)),
 
     // Get backend logs
     getBackendLogs: (limit: number = 100) =>
@@ -164,6 +109,10 @@ export const botApi = {
     monitorCheck: () =>
         request<{ status: string; minutes_since_last_data: number }>("/scraper/monitor/check")
             .catch(() => ({ status: "offline", minutes_since_last_data: -1 })),
+
+    // Get Report Summary
+    getReportSummary: (days: number = 7) => 
+        request<ReportSummaryResponse>(`/products/reports/summary?days=${days}`)
 };
 
 // Data Quality type
