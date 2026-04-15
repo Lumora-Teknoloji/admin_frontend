@@ -1,7 +1,4 @@
-// Use environment variables for configuration
-const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || '/bot-admin';
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || BASE_PATH;
-const API_URL = `${API_BASE}/api`;
+const API_URL = '/api';
 
 export async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const isFormData = options.body instanceof FormData;
@@ -18,6 +15,13 @@ export async function request<T>(endpoint: string, options: RequestInit = {}): P
     });
 
     if (!res.ok) {
+        if (res.status === 401) {
+            // Tam yetki koruması: Kullanıcı cache / soft route ile girse bile backend reddederse direkt sayfadan atılır.
+            if (typeof window !== 'undefined') {
+                window.location.href = `/login`;
+            }
+        }
+        
         const errorText = await res.clone().text().catch(() => '');
         console.error(`API Error details: status=${res.status} url=${res.url} body=${errorText}`);
 

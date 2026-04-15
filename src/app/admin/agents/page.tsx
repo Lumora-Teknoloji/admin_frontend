@@ -164,6 +164,8 @@ function RedisQueueMonitor() {
     );
 }
 
+import { TaskManager } from "@/components/TaskManager";
+
 // ─── Ana Sayfa ────────────────────────────────────────────────────────────────
 export default function AgentsPage() {
     const [agents, setAgents]   = useState<Agent[]>([]);
@@ -224,6 +226,9 @@ export default function AgentsPage() {
                     </button>
                 </div>
             </div>
+
+            {/* Görev Yöneticisi (Scheduler) */}
+            <TaskManager />
 
             {/* Redis Queue Monitor */}
             <RedisQueueMonitor />

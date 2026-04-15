@@ -26,7 +26,6 @@ interface BotCardProps {
 
 export function BotCard({ bot, onStart, onWorkerStart, onStop, onUpdate, onDelete, onSpeedMode }: BotCardProps) {
     const router = useRouter();
-    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '/bot-admin';
     const [isEditing, setIsEditing] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [pendingStatus, setPendingStatus] = useState<string | null>(null);
@@ -91,7 +90,7 @@ export function BotCard({ bot, onStart, onWorkerStart, onStop, onUpdate, onDelet
         : `${uptimeM}dk ${String(uptimeS).padStart(2, '0')}sn`;
 
     const handleNavigateToLogs = useCallback(() => {
-        router.push(`/logs?filter=${encodeURIComponent(bot.name)}`);
+        router.push(`/admin/logs?filter=${encodeURIComponent(bot.name)}`);
     }, [router, bot.name]);
 
     // Editable state

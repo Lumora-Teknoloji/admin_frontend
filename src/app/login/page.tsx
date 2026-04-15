@@ -20,9 +20,8 @@ export default function LoginPage() {
 
         try {
             await authApi.login(username, password);
-            const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '/bot-admin';
             router.refresh();
-            router.replace(basePath || '/');
+            router.replace('/admin');
         } catch (err: any) {
             setError(err.message || "Giriş yapılamadı. Bilgilerinizi kontrol edin.");
             setIsLoading(false);

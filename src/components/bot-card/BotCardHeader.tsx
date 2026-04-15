@@ -23,8 +23,6 @@ export function BotCardHeader({
     handleDelete,
     onStop
 }: BotCardHeaderProps) {
-    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '/bot-admin';
-
     return (
         <div className="relative mb-6">
             <div className="flex items-center justify-between">
@@ -40,7 +38,7 @@ export function BotCardHeader({
                             <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
                             <div className="relative z-10 w-full h-full flex items-center justify-center">
                                 <img
-                                    src={`${basePath}/assets/${modeTheme.avatarImg}`}
+                                    src={`/assets/${modeTheme.avatarImg}`}
                                     alt="Bot"
                                     className={cn(
                                         "h-9 w-9 object-contain transition-all duration-700",

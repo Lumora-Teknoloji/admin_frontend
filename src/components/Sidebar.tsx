@@ -11,27 +11,22 @@ import { authApi } from "@/lib/api";
 const menuItems = [
     {
         name: "Genel Bakış",
-        href: "/",
+        href: "/admin",
         icon: LayoutDashboard,
     },
     {
         name: "Ürünler",
-        href: "/products",
+        href: "/admin/products",
         icon: Package,
     },
     {
         name: "Sistem Logları",
-        href: "/logs",
+        href: "/admin/logs",
         icon: ScrollText,
     },
     {
-        name: "Bot Kontrol",
-        href: "/bots",
-        icon: Settings,
-    },
-    {
         name: "Agents",
-        href: "/agents",
+        href: "/admin/agents",
         icon: Monitor,
     },
 ];
@@ -40,7 +35,6 @@ export function Sidebar() {
     const pathname = usePathname();
     const router = useRouter();
     const [user, setUser] = useState<{ username: string; full_name?: string } | null>(null);
-    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '/bot-admin';
 
     useEffect(() => {
         authApi.me().then(data => {
@@ -63,7 +57,7 @@ export function Sidebar() {
                         {/* Green Glow Effect */}
                         <div className="absolute inset-0 bg-emerald-500/5 blur-xl rounded-full"></div>
                         <Image
-                            src={`${basePath}/lumora_orb.png`}
+                            src="/lumora_orb.png"
                             alt="Lumora Logo"
                             width={110}
                             height={110}
@@ -123,12 +117,12 @@ export function Sidebar() {
                         try {
                             await authApi.logout();
                             router.refresh();
-                            router.replace(`${basePath}/login`);
+                            router.replace('/login');
                         } catch (err) {
                             console.error("Logout failed:", err);
                             // Fallback in case of network error
                             router.refresh();
-                            router.replace(`${basePath}/login`);
+                            router.replace('/login');
                         }
                     }}
                     className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#2a2d35] hover:bg-[#32363f] px-4 py-3 text-xs font-bold text-gray-400 hover:text-white transition-all border-l-4 border-l-[#a16207] shadow-lg"

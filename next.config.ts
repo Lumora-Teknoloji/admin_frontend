@@ -2,12 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: 'standalone',
-  basePath: process.env.NEXT_PUBLIC_BASE_PATH || "/bot-admin",
   async rewrites() {
     return [
       {
         source: "/api/:path*",
-        destination: `${process.env.BACKEND_URL || 'http://localhost:8000'}/api/:path*`, // Proxy to Backend
+        destination: `${process.env.BACKEND_URL}/api/:path*`, // Proxy to Backend
       },
     ];
   },
@@ -15,13 +14,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/',
-        destination: process.env.NEXT_PUBLIC_BASE_PATH || '/bot-admin',
-        permanent: false,
-        basePath: false, // Critical: Match / without the base path prefix
-      },
-      {
-        source: '/bot-admin',
-        destination: '/',
+        destination: '/admin',
         permanent: false,
       },
     ];

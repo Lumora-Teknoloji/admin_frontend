@@ -1,7 +1,7 @@
 const http = require('http');
 const https = require('https');
 
-const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || '/bot-admin';
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || '/admin';
 const PORT = process.env.PORT || 3002;
 const HOST = 'localhost';
 
