@@ -16,6 +16,7 @@ export interface Bot {
     source_bot_name?: string;
     start_time: string;
     end_time: string;
+    scrape_interval_hours: number;
     page_limit: number;
     is_active: boolean;
     pending_links: number;

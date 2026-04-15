@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Agent, agentApi, redisApi, RedisQueueStats, RedisBotsMap } from "@/services/agentApi";
-import { AgentCard } from "@/components/AgentCard";
-import { StatsCard } from "@/components/StatsCard";
+import { redisApi, RedisQueueStats, RedisBotsMap } from "@/services/agentApi";
 import {
-    Monitor, Wifi, WifiOff, RefreshCw, Database, Cpu,
-    Radio, ListTodo, Loader2, CheckCircle2, AlertTriangle, Zap, RotateCcw
+    Monitor, WifiOff, RefreshCw, Database,
+    Radio, ListTodo, Loader2, CheckCircle2, AlertTriangle, Zap, RotateCcw,
+    KeyRound, Copy, Check, X
 } from "lucide-react";
 
 // ─── Redis Bot satırı ─────────────────────────────────────────────────────────
@@ -168,34 +167,26 @@ import { TaskManager } from "@/components/TaskManager";
 
 // ─── Ana Sayfa ────────────────────────────────────────────────────────────────
 export default function AgentsPage() {
-    const [agents, setAgents]   = useState<Agent[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError]     = useState<string | null>(null);
-    const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+    const [reloadKey, setReloadKey] = useState(0);
+    const [showSetupInfo, setShowSetupInfo] = useState(false);
+    const [copiedSec, setCopiedSec] = useState(false);
+    const [copiedUrl, setCopiedUrl] = useState(false);
 
-    const fetchAgents = useCallback(async () => {
-        try {
-            const data = await agentApi.list();
-            setAgents(data);
-            setError(null);
-            setLastUpdate(new Date());
-        } catch (e: any) {
-            setError(e.message);
-        } finally {
-            setLoading(false);
+    const secretKey = process.env.NEXT_PUBLIC_AGENT_SECRET || "Tanımlanmamış (.env.local'i kontrol edin)";
+    const apiUrl = typeof window !== "undefined" 
+        ? window.location.origin.replace(":3001", ":8000") + "/api" 
+        : "http://localhost:8000/api";
+
+    const copyToClipboard = (text: string, type: 'sec' | 'url') => {
+        navigator.clipboard.writeText(text);
+        if (type === 'sec') {
+            setCopiedSec(true);
+            setTimeout(() => setCopiedSec(false), 2000);
+        } else {
+            setCopiedUrl(true);
+            setTimeout(() => setCopiedUrl(false), 2000);
         }
-    }, []);
-
-    useEffect(() => {
-        fetchAgents();
-        const interval = setInterval(fetchAgents, 10000);
-        return () => clearInterval(interval);
-    }, [fetchAgents]);
-
-    const onlineCount   = agents.filter(a => a.status !== "offline").length;
-    const scrapingCount = agents.filter(a => a.status === "scraping").length;
-    const totalProducts = agents.reduce((sum, a) => sum + (a.stats?.products ?? 0), 0);
-    const totalMetrics  = agents.reduce((sum, a) => sum + (a.stats?.metrics ?? 0), 0);
+    };
 
     return (
         <>
@@ -204,97 +195,88 @@ export default function AgentsPage() {
                 <div>
                     <h1 className="text-2xl font-bold text-white tracking-wide flex items-center gap-3">
                         <Monitor className="h-6 w-6 text-emerald-500" />
-                        Distributed Agents
+                        Ağ ve Görev Yönetimi
                     </h1>
                     <p className="text-xs text-gray-600 mt-1 font-medium">
-                        Bağlı bilgisayarların durumu ve Redis kuyruk monitörü
+                        Bağlı bilgisayarların (agent) durumu ve görev planlayıcı
                     </p>
                 </div>
 
                 <div className="flex items-center gap-3">
-                    {lastUpdate && (
-                        <span className="text-[10px] text-gray-600 font-medium">
-                            Son güncelleme: {lastUpdate.toLocaleTimeString("tr-TR")}
-                        </span>
-                    )}
                     <button
-                        onClick={fetchAgents}
+                        onClick={() => setShowSetupInfo(true)}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 hover:bg-indigo-500/20 text-xs font-bold transition-all shadow-[0_0_15px_rgba(99,102,241,0.1)]"
+                        title="Agent Nasıl Bağlanır?"
+                    >
+                        <KeyRound className="h-3.5 w-3.5" />
+                        Kurulum Şifresi
+                    </button>
+                    <button
+                        onClick={() => setReloadKey(k => k + 1)}
                         className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#13151a] border border-gray-800/50 text-gray-400 hover:text-white text-xs font-bold transition-all hover:border-emerald-500/30"
                     >
-                        <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
+                        <RefreshCw className="h-3.5 w-3.5" />
                         Yenile
                     </button>
                 </div>
             </div>
 
             {/* Görev Yöneticisi (Scheduler) */}
-            <TaskManager />
+            <TaskManager key={`task-${reloadKey}`} />
 
             {/* Redis Queue Monitor */}
-            <RedisQueueMonitor />
+            <RedisQueueMonitor key={`monitor-${reloadKey}`} />
 
-            {/* Eski Agent Stats */}
-            <div className="grid grid-cols-4 gap-4 mb-8">
-                <StatsCard
-                    title="Toplam Agent"
-                    value={agents.length}
-                    subValue={`${onlineCount} çevrimiçi`}
-                    status={onlineCount > 0 ? "success" : "neutral"}
-                />
-                <StatsCard
-                    title="Aktif Kazıma"
-                    value={scrapingCount}
-                    subValue={scrapingCount > 0 ? "çalışıyor" : "boşta"}
-                    status={scrapingCount > 0 ? "warning" : "neutral"}
-                />
-                <StatsCard
-                    title="Toplam Ürün"
-                    value={totalProducts.toLocaleString()}
-                    subValue="tüm agent'lardan"
-                    status="success"
-                />
-                <StatsCard
-                    title="Toplam Metrik"
-                    value={totalMetrics.toLocaleString()}
-                    subValue="tüm agent'lardan"
-                    status="neutral"
-                />
-            </div>
+            {/* Setup Info Modal */}
+            {showSetupInfo && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div 
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
+                        onClick={() => setShowSetupInfo(false)}
+                    />
+                    <div className="relative z-10 w-full max-w-lg bg-[#0a0d14] rounded-2xl border border-gray-700/50 shadow-2xl p-6">
+                        <div className="flex justify-between items-start mb-6">
+                            <div>
+                                <h3 className="text-xl font-bold text-white mb-1">Yeni Bilgisayar (Bot) Bağlama</h3>
+                                <p className="text-xs text-gray-500">Sisteme yeni bir makine sokmak için gerekli bağlantı bilgileri.</p>
+                            </div>
+                            <button onClick={() => setShowSetupInfo(false)} className="text-gray-500 hover:text-white">
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
 
-            {/* Error */}
-            {error && (
-                <div className="rounded-xl bg-red-500/5 border border-red-500/15 p-4 mb-6">
-                    <p className="text-xs text-red-400 font-medium">⚠️ API Hatası: {error}</p>
-                </div>
-            )}
+                        <div className="space-y-4">
+                            <div className="bg-[#13151a] p-4 rounded-xl border border-gray-800">
+                                <p className="text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">1. Bağlantı Adresi (VPS URL)</p>
+                                <div className="flex items-center justify-between bg-black/30 px-3 py-2 rounded-lg border border-gray-800/50">
+                                    <code className="text-sm text-sky-400 font-mono select-all truncate pr-4">{apiUrl}</code>
+                                    <button onClick={() => copyToClipboard(apiUrl, 'url')} className="text-gray-500 hover:text-white transition-colors shrink-0">
+                                        {copiedUrl ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+                                    </button>
+                                </div>
+                            </div>
 
-            {/* Agent Cards */}
-            {loading && agents.length === 0 ? (
-                <div className="flex items-center justify-center h-48">
-                    <div className="text-center">
-                        <RefreshCw className="h-8 w-8 text-gray-600 animate-spin mx-auto mb-3" />
-                        <p className="text-sm text-gray-600 font-medium">Agent&apos;lar yükleniyor...</p>
+                            <div className="bg-[#13151a] p-4 rounded-xl border border-gray-800">
+                                <div className="flex justify-between items-center mb-2">
+                                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">2. Gizli Anahtar (Agent Secret)</p>
+                                </div>
+                                <div className="flex items-center justify-between bg-black/30 px-3 py-2 rounded-lg border border-gray-800/50">
+                                    <code className="text-sm text-emerald-400 font-mono select-all truncate pr-4 max-w-[300px] blur-[2px] hover:blur-none transition-all">{secretKey}</code>
+                                    <button onClick={() => copyToClipboard(secretKey, 'sec')} className="text-gray-500 hover:text-white transition-colors shrink-0">
+                                        {copiedSec ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+                                    </button>
+                                </div>
+                                <p className="text-[10px] text-gray-500 mt-2">Bu şifreyi değiştirmek istersen backend ve frontend konfigürasyon (<code>.env</code>) dosyalarından manuel değiştirmen gerekir.</p>
+                            </div>
+                            
+                            <div className="pt-2">
+                                <p className="text-xs text-justify leading-relaxed text-gray-400 p-3 bg-indigo-500/5 rounded-lg border border-indigo-500/10">
+                                    <strong className="text-indigo-400 font-bold">Nasıl Kullanılır: </strong>
+                                    Başka bir bilgisayarda (Sunucu veya Kendi PC'n) Python `redis_agent.py` scriptini ilk defa çalıştırdığında sana sorulacak sihirbaza bu bilgileri yapıştır. Ana merkeze otomatik bağlanacaktır.
+                                </p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            ) : agents.length === 0 ? (
-                <div className="flex items-center justify-center h-48">
-                    <div className="text-center">
-                        <WifiOff className="h-12 w-12 text-gray-700 mx-auto mb-4" />
-                        <h3 className="text-sm font-bold text-gray-500 mb-1">Henüz bağlı agent yok</h3>
-                        <p className="text-xs text-gray-700 max-w-xs mx-auto">
-                            Local bilgisayarda{" "}
-                            <code className="text-emerald-500/70 bg-emerald-500/5 px-1.5 py-0.5 rounded">
-                                python redis_agent.py
-                            </code>{" "}
-                            çalıştırarak bir agent bağlayabilirsin.
-                        </p>
-                    </div>
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                    {agents.map((agent) => (
-                        <AgentCard key={agent.id} agent={agent} onRefresh={fetchAgents} />
-                    ))}
                 </div>
             )}
         </>

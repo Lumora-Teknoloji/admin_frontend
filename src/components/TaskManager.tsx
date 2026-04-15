@@ -14,7 +14,7 @@ export function TaskManager() {
     const [taskName, setTaskName] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
     const [startTime, setStartTime] = useState("09:00");
-    const [endTime, setEndTime] = useState("18:00");
+    const [isRecurring, setIsRecurring] = useState(true);
     const [pageLimit, setPageLimit] = useState(50);
     const [errorMsg, setErrorMsg] = useState("");
 
@@ -50,7 +50,8 @@ export function TaskManager() {
                 task_name: taskName,
                 search_term: searchTerm,
                 start_time: startTime,
-                end_time: endTime,
+                end_time: "23:59", // API format compliance
+                scrape_interval: isRecurring ? 24 : 0,
                 page_limit: Number(pageLimit),
                 mode: "normal",
                 target_platform: "Trendyol",
@@ -149,13 +150,18 @@ export function TaskManager() {
 
                             {/* Column 2: Schedule */}
                             <div className="flex-[0.8] flex items-center gap-6">
-                                <div className="flex flex-col items-start gap-1 p-2 rounded-lg bg-black/20 border border-gray-800/30">
+                                <div className="flex flex-col items-start gap-1 p-2 rounded-lg bg-black/20 border border-gray-800/30 min-w-[120px]">
                                     <div className="flex items-center gap-1.5 text-[10px] text-gray-500 font-bold uppercase">
                                         <Clock className="h-3 w-3 text-indigo-400" />
-                                        Mesaİ/SaaT
+                                        BAŞLAMA ZAMANI
                                     </div>
-                                    <div className="text-xs text-gray-300 font-mono font-medium">
-                                        {task.start_time} - {task.end_time}
+                                    <div className="text-xs text-gray-300 font-mono font-medium flex items-center gap-2">
+                                        <span>{task.start_time}</span>
+                                        {task.scrape_interval_hours > 0 ? (
+                                            <span className="text-[9px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded">Her Gün</span>
+                                        ) : (
+                                            <span className="text-[9px] bg-sky-500/20 text-sky-400 px-1.5 py-0.5 rounded">Tek Sefer</span>
+                                        )}
                                     </div>
                                 </div>
 
@@ -260,7 +266,7 @@ export function TaskManager() {
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1.5">
-                                        <label className="text-xs font-bold text-gray-400 ml-1">Başlama Saati</label>
+                                        <label className="text-xs font-bold text-gray-400 ml-1">Bağlantı Toplama (Başlama) Saati</label>
                                         <input 
                                             type="time" 
                                             value={startTime}
@@ -269,15 +275,24 @@ export function TaskManager() {
                                             required
                                         />
                                     </div>
-                                    <div className="space-y-1.5">
-                                        <label className="text-xs font-bold text-gray-400 ml-1">Bitiş Saati</label>
-                                        <input 
-                                            type="time" 
-                                            value={endTime}
-                                            onChange={e => setEndTime(e.target.value)}
-                                            className="w-full bg-[#131822] border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all [color-scheme:dark]"
-                                            required
-                                        />
+                                    <div className="space-y-1.5 flex flex-col justify-end">
+                                        <label className="flex items-center gap-3 bg-[#131822] border border-gray-700 rounded-xl px-4 py-2.5 cursor-pointer hover:border-emerald-500/50 transition-all h-[42px]">
+                                            <div className="relative flex items-center justify-center">
+                                                <input 
+                                                    type="checkbox" 
+                                                    checked={isRecurring}
+                                                    onChange={e => setIsRecurring(e.target.checked)}
+                                                    className="sr-only"
+                                                />
+                                                <div className={`w-5 h-5 rounded border ${isRecurring ? 'bg-emerald-500 border-emerald-500' : 'bg-[#0a0d14] border-gray-600'} transition-colors flex items-center justify-center`}>
+                                                    {isRecurring && <svg className="w-3.5 h-3.5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
+                                                </div>
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-bold text-white leading-none">Her Gün Tekrarla</span>
+                                                <span className="text-[9px] text-gray-500 mt-0.5 leading-none">Seçili saatte otomatik çek</span>
+                                            </div>
+                                        </label>
                                     </div>
                                 </div>
 
