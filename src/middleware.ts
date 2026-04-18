@@ -25,6 +25,17 @@ export async function middleware(request: NextRequest) {
             return response;
         }
 
+        const userData = await res.json();
+        
+        // Sıkı Yetki Kontrolü: Sadece belirlenen ADMIN hesaplarının paneli görmesine izin ver
+        const allowedAdmins = (process.env.ADMIN_USERNAMES || 'admin,bedir').split(',');
+        if (!userData || !userData.username || !allowedAdmins.includes(userData.username)) {
+            // Admin yetkisi yoksa, chatbot hesabından atıp admin girişine zorla
+            const response = NextResponse.redirect(new URL('/login', request.url));
+            response.cookies.delete('access_token');
+            return response;
+        }
+
     } catch (err) {
         console.error("Middleware token verification failed due to network:", err);
         const response = NextResponse.redirect(new URL('/login', request.url));
@@ -37,5 +48,5 @@ export async function middleware(request: NextRequest) {
 
 // Routes to protect
 export const config = {
-    matcher: ['/admin/:path*'],
+    matcher: ['/((?!login|_next|api).*)'],
 };

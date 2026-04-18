@@ -21,7 +21,7 @@ export default function LoginPage() {
         try {
             await authApi.login(username, password);
             router.refresh();
-            router.replace('/admin');
+            router.replace('/');
         } catch (err: any) {
             setError(err.message || "Giriş yapılamadı. Bilgilerinizi kontrol edin.");
             setIsLoading(false);

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { botApi, Bot } from "@/services/botApi";
-import { Plus, Trash2, Clock, Play, Square, Settings2, Loader2, AlertCircle, X, Search, CalendarClock } from "lucide-react";
+import { Plus, Trash2, Clock, Play, Square, Settings2, Loader2, AlertCircle, X, Search, CalendarClock, RefreshCw } from "lucide-react";
 
 export function TaskManager() {
     const [tasks, setTasks] = useState<Bot[]>([]);
@@ -79,12 +79,9 @@ export function TaskManager() {
         fetchTasks();
     };
 
-    const handleToggleStatus = async (task: Bot) => {
-        if (task.is_active) {
-            await botApi.stopBot(task.id);
-        } else {
-            await botApi.startBot(task.id);
-        }
+    const handleReset = async (id: number, name: string) => {
+        if (!confirm(`🤖 ${name} botunun tüm çekim istatistiklerini ve kuyruğunu SIYIRLAMAK istediğinize emin misiniz?`)) return;
+        await botApi.resetBot(id);
         fetchTasks();
     };
 
@@ -97,9 +94,9 @@ export function TaskManager() {
                 <div>
                     <h2 className="text-xl font-bold tracking-wide text-white flex items-center gap-3">
                         <CalendarClock className="h-6 w-6 text-emerald-400" />
-                        Planlanmış Hedefler (Scheduler)
+                        Kategori ve Anahtar Kelime Botları
                     </h2>
-                    <p className="text-xs text-gray-500 mt-1.5 font-medium">Link ve Anahtar Kelime otomasyon zamanlayıcısı</p>
+                    <p className="text-xs text-gray-500 mt-1.5 font-medium">Başlatıldığında linkleri toplayıp kuyruğa ekleyen hedefler</p>
                 </div>
                 <button 
                     onClick={() => setIsAddModalOpen(true)}
@@ -129,17 +126,23 @@ export function TaskManager() {
                             {/* Column 1: Info */}
                             <div className="flex items-center gap-4 flex-1">
                                 <div className={`h-10 w-10 rounded-lg flex items-center justify-center border ${
-                                        task.is_active ? "bg-emerald-500/10 border-emerald-500/20" : "bg-gray-800/50 border-gray-700/50"
+                                        task.task_status === "active" ? "bg-emerald-500/10 border-emerald-500/20" : 
+                                        task.task_status === "scheduled" ? "bg-indigo-500/10 border-indigo-500/20" : 
+                                        "bg-gray-800/50 border-gray-700/50"
                                 }`}>
-                                    {task.is_active ? <Play className="h-5 w-5 text-emerald-400 ml-0.5" /> : <Square className="h-4 w-4 text-gray-500" />}
+                                    {task.task_status === "active" ? <Play className="h-5 w-5 text-emerald-400 ml-0.5" /> : 
+                                     task.task_status === "scheduled" ? <Clock className="h-5 w-5 text-indigo-400" /> : 
+                                     <Square className="h-4 w-4 text-gray-500" />}
                                 </div>
                                 <div>
                                     <h4 className="text-sm font-bold text-gray-100 flex items-center gap-2">
                                         {task.name}
                                         <span className={`text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider ${
-                                            task.is_active ? "bg-emerald-500/10 text-emerald-400" : "bg-gray-800 text-gray-400"
+                                            task.task_status === "active" ? "bg-emerald-500/10 text-emerald-400" : 
+                                            task.task_status === "scheduled" ? "bg-indigo-500/10 text-indigo-400" : 
+                                            "bg-gray-800 text-gray-400"
                                         }`}>
-                                            {task.is_active ? "Aktif" : "Durduruldu"}
+                                            {task.task_status === "active" ? "Oynatılıyor" : task.task_status === "scheduled" ? "Planlandı" : "Durduruldu"}
                                         </span>
                                     </h4>
                                     <p className="text-xs text-sky-400/80 font-medium mt-1 truncate max-w-xs" title={task.keyword}>
@@ -172,23 +175,58 @@ export function TaskManager() {
                             </div>
 
                             {/* Column 3: Stats Summary */}
-                            <div className="hidden lg:flex flex-[0.7] flex-col gap-1 pr-6">
-                                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Toplanan</span>
-                                <span className="text-sm font-black text-emerald-400">{task.stats?.scraped?.toLocaleString() || 0}</span>
+                            <div className="hidden lg:flex flex-[0.8] items-center gap-6 pr-6">
+                                <div className="flex flex-col gap-1">
+                                    <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Toplanan</span>
+                                    <span className="text-sm font-black text-emerald-400">{task.stats?.scraped?.toLocaleString() || 0}</span>
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Bekleyen</span>
+                                    <span className="text-sm font-black text-sky-400">{task.pending_links?.toLocaleString() || 0}</span>
+                                </div>
                             </div>
 
                             {/* Column 4: Actions */}
                             <div className="flex items-center gap-2 shrink-0">
                                 <button 
-                                    onClick={() => handleToggleStatus(task)}
+                                    onClick={() => botApi.startBot(task.id).then(fetchTasks)}
                                     className={`p-2 rounded-xl border transition-all ${
-                                        task.is_active 
-                                        ? "bg-amber-500/10 border-amber-500/20 text-amber-500 hover:bg-amber-500/20" 
-                                        : "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20"
+                                        task.task_status === "active" 
+                                        ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300" 
+                                        : "bg-emerald-500/5 border-emerald-500/10 text-emerald-500 hover:bg-emerald-500/10 hover:border-emerald-500/30"
                                     }`}
-                                    title={task.is_active ? "Görevi Durdur" : "Görevi Başlat"}
+                                    title="Hemen Oynat"
                                 >
-                                    {task.is_active ? <Square className="h-4 w-4" /> : <Play className="h-4 w-4 ml-0.5" />}
+                                    <Play className="h-4 w-4 ml-0.5" />
+                                </button>
+                                <button 
+                                    onClick={() => botApi.scheduleBot(task.id).then(fetchTasks)}
+                                    className={`p-2 rounded-xl border transition-all ${
+                                        task.task_status === "scheduled" 
+                                        ? "bg-indigo-500/20 border-indigo-500/40 text-indigo-300" 
+                                        : "bg-indigo-500/5 border-indigo-500/10 text-indigo-500 hover:bg-indigo-500/10 hover:border-indigo-500/30"
+                                    }`}
+                                    title="Planla"
+                                >
+                                    <Clock className="h-4 w-4" />
+                                </button>
+                                <button 
+                                    onClick={() => botApi.stopBot(task.id).then(fetchTasks)}
+                                    className={`p-2 rounded-xl border transition-all ${
+                                        task.task_status === "stopped" 
+                                        ? "bg-gray-500/20 border-gray-500/40 text-gray-300" 
+                                        : "bg-gray-500/5 border-gray-500/10 text-gray-500 hover:bg-gray-500/10 hover:border-gray-500/30"
+                                    }`}
+                                    title="Durdur"
+                                >
+                                    <Square className="h-4 w-4" />
+                                </button>
+                                <button 
+                                    onClick={() => handleReset(task.id, task.name)}
+                                    className="p-2 rounded-xl bg-orange-500/5 border border-orange-500/10 text-orange-400 hover:bg-orange-500/10 hover:border-orange-500/30 transition-all"
+                                    title="İstatistikleri Sıfırla"
+                                >
+                                    <RefreshCw className="h-4 w-4" />
                                 </button>
                                 <button 
                                     onClick={() => handleDelete(task.id)}

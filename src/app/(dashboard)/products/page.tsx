@@ -24,6 +24,8 @@ export default function ProductsPage() {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [newProductIds, setNewProductIds] = useState<Set<number>>(new Set());
     const [autoRefresh, setAutoRefresh] = useState(true);
+    const [todayOnly, setTodayOnly] = useState(true);
+    const [globalTotal, setGlobalTotal] = useState(0);
     const prevIdsRef = useRef<Set<number>>(new Set());
     const isFirstLoad = useRef(true);
 
@@ -37,6 +39,7 @@ export default function ProductsPage() {
                 sort_order: "desc",
             });
             if (search) params.set("search", search);
+            if (todayOnly) params.set("today_only", "true");
 
             const data = await request<ProductListResponse>(`/products?${params}`);
 
@@ -64,19 +67,30 @@ export default function ProductsPage() {
         } finally {
             if (!silent) setLoading(false);
         }
-    }, [page, search, sortBy]);
+    }, [page, search, sortBy, todayOnly]);
+
+    const fetchGlobalStatus = useCallback(async () => {
+        try {
+            const statusData = await request<any>('/scraper/status');
+            setGlobalTotal(statusData.total_products);
+        } catch (e) {}
+    }, []);
 
     // İlk yükleme
     useEffect(() => {
         fetchProducts();
-    }, [fetchProducts]);
+        fetchGlobalStatus();
+    }, [fetchProducts, fetchGlobalStatus]);
 
     // Auto-refresh: her 10 saniyede bir (sadece ilk sayfa + son güncelleme sıralaması)
     useEffect(() => {
         if (!autoRefresh || page !== 1 || sortBy !== "last_scraped_at") return;
-        const interval = setInterval(() => fetchProducts(true), 10000);
+        const interval = setInterval(() => {
+            fetchProducts(true);
+            fetchGlobalStatus();
+        }, 10000);
         return () => clearInterval(interval);
-    }, [autoRefresh, page, sortBy, fetchProducts]);
+    }, [autoRefresh, page, sortBy, fetchProducts, fetchGlobalStatus]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -126,8 +140,9 @@ export default function ProductsPage() {
                         </div>
                     )}
                     <div className="text-right">
-                        <div className="text-3xl font-bold text-green-400">{total.toLocaleString()}</div>
-                        <div className="text-xs text-gray-500">Toplam Ürün</div>
+                        <div className="text-3xl font-bold text-green-400">{todayOnly ? total.toLocaleString() : (globalTotal || total).toLocaleString()}</div>
+                        <div className="text-xs text-gray-500">{todayOnly ? "Bugün Çekilen Ürün" : "Toplam Ürün"}</div>
+                        {todayOnly && <div className="text-[10px] text-gray-600 mt-0.5">Genel Toplam: {(globalTotal || total).toLocaleString()}</div>}
                     </div>
                 </div>
             </div>
@@ -155,6 +170,18 @@ export default function ProductsPage() {
                     <option value="brand">Marka</option>
                     <option value="avg_sales_velocity">Satış Hızı</option>
                 </select>
+                <button
+                    type="button"
+                    onClick={() => { setTodayOnly(!todayOnly); setPage(1); }}
+                    className={cn(
+                        "px-4 py-2 rounded-xl text-sm font-medium transition-colors border",
+                        todayOnly 
+                            ? "bg-green-500/10 border-green-500/30 text-green-400" 
+                            : "bg-[#13151a] border-gray-800 text-gray-400 hover:text-gray-300"
+                    )}
+                >
+                    Sadece Bugün
+                </button>
             </div>
 
             {/* Products Table */}

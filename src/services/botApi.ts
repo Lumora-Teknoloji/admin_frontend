@@ -26,6 +26,12 @@ export const botApi = {
     // Stop a bot
     stopBot: (id: number) => request<{ success: boolean; message: string }>(`/scraper/bots/${id}/stop`, { method: "POST" }),
 
+    // Schedule a bot
+    scheduleBot: (id: number) => request<{ success: boolean; message: string }>(`/scraper/bots/${id}/schedule`, { method: "POST" }),
+
+    // Reset a bot's stats
+    resetBot: (id: number) => request<{ success: boolean; message: string }>(`/scraper/bots/${id}/reset`, { method: "POST" }),
+
     // Update bot settings
     updateSettings: (id: number, settings: BotSettingsUpdate) =>
         request<{ success: boolean }>(`/scraper/bots/${id}/settings`, {

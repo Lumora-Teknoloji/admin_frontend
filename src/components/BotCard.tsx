@@ -90,7 +90,7 @@ export function BotCard({ bot, onStart, onWorkerStart, onStop, onUpdate, onDelet
         : `${uptimeM}dk ${String(uptimeS).padStart(2, '0')}sn`;
 
     const handleNavigateToLogs = useCallback(() => {
-        router.push(`/admin/logs?filter=${encodeURIComponent(bot.name)}`);
+        router.push(`/logs?filter=${encodeURIComponent(bot.name)}`);
     }, [router, bot.name]);
 
     // Editable state

@@ -18,8 +18,6 @@ npm install
 NEXT_PUBLIC_BASE_PATH=/admin
 NEXT_PUBLIC_API_URL=
 BACKEND_URL=http://127.0.0.1:8000
-ADMIN_USERNAME=your_admin_username
-ADMIN_PASSWORD=your_secure_password
 ```
 
 > **Not:** Windows'ta `localhost` IPv6 çözümlemesi sorunu yaşanabilir. `127.0.0.1` kullanmanız önerilir.
@@ -32,7 +30,7 @@ npm run dev
 
 Tarayıcıda http://localhost:3000/admin adresine gidin.
 
-**Güvenlik Uyarısı:** Giriş yapabilmek için `.env.local` dosyasındaki `ADMIN_USERNAME` ve `ADMIN_PASSWORD` değişkenlerini kullanmalısınız. Sistemin varsayılan bir şifresi yoktur.
+**Güvenlik:** Authentication işlemi Next.js Middleware üzerinden backend API'ye proxy edilerek HTTP-Only çerezlerle (JWT/Token) güvenli bir şekilde yönetilir.
 
 ## 📋 Özellikler
 

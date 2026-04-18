@@ -10,6 +10,7 @@ export interface Bot {
     name: string;
     platform: string;
     status: "running" | "stopped" | "error" | "idle" | "worker_running";
+    task_status?: "active" | "stopped" | "scheduled";
     keyword: string;
     mode: "linker" | "worker" | "normal" | "review";
     source_task_id?: number;

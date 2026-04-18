@@ -21,10 +21,12 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 # ENV NEXT_TELEMETRY_DISABLED 1
 
-ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_API_URL="https://lumoraboutique.com/api"
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
-ARG BACKEND_URL=http://backend:8000
+ARG BACKEND_URL="http://lumora-backend:8000"
 ENV BACKEND_URL=$BACKEND_URL
+ARG NEXT_PUBLIC_AGENT_SECRET="763b827abfadede9f7ff02327592d64e67b7e0a33f641543"
+ENV NEXT_PUBLIC_AGENT_SECRET=$NEXT_PUBLIC_AGENT_SECRET
 RUN npm run build
 
 # Production image, copy all the files and run next

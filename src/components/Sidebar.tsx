@@ -11,22 +11,22 @@ import { authApi } from "@/lib/api";
 const menuItems = [
     {
         name: "Genel Bakış",
-        href: "/admin",
+        href: "/",
         icon: LayoutDashboard,
     },
     {
         name: "Ürünler",
-        href: "/admin/products",
+        href: "/products",
         icon: Package,
     },
     {
         name: "Sistem Logları",
-        href: "/admin/logs",
+        href: "/logs",
         icon: ScrollText,
     },
     {
         name: "Agents",
-        href: "/admin/agents",
+        href: "/agents",
         icon: Monitor,
     },
 ];
