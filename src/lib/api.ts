@@ -18,7 +18,7 @@ export async function request<T>(endpoint: string, options: RequestInit = {}): P
         if (res.status === 401) {
             // Tam yetki koruması: Kullanıcı cache / soft route ile girse bile backend reddederse direkt sayfadan atılır.
             if (typeof window !== 'undefined') {
-                window.location.href = `/login`;
+                window.location.href = `/admin/login`;
             }
         }
         

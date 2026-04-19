@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 // @ts-ignore
 const nextConfig = {
   output: 'standalone',
+  basePath: '/admin',
   eslint: {
     ignoreDuringBuilds: true,
   },
