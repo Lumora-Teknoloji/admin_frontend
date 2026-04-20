@@ -15,13 +15,13 @@ export async function request<T>(endpoint: string, options: RequestInit = {}): P
     });
 
     if (!res.ok) {
-        if (res.status === 401) {
+        if (res.status === 401 && !endpoint.includes('/redis')) {
             // Tam yetki koruması: Kullanıcı cache / soft route ile girse bile backend reddederse direkt sayfadan atılır.
             if (typeof window !== 'undefined') {
-                window.location.href = `/admin/login`;
+                window.location.href = `/login`;
             }
         }
-        
+
         const errorText = await res.clone().text().catch(() => '');
         console.error(`API Error details: status=${res.status} url=${res.url} body=${errorText}`);
 

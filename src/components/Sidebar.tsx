@@ -53,15 +53,11 @@ export function Sidebar() {
             <div>
                 {/* Logo Section */}
                 <div className="flex flex-col items-center justify-center pt-10 pb-8">
-                    <div className="mb-4 relative h-24 w-24 rounded-full overflow-hidden shadow-[0_0_20px_rgba(16,185,129,0.2)] border-[4px] border-black/80 ring-1 ring-emerald-500/20 flex items-center justify-center group cursor-pointer transition-all duration-300 hover:shadow-[0_0_30px_rgba(16,185,129,0.4)]">
-                        {/* Green Glow Effect */}
-                        <div className="absolute inset-0 bg-emerald-500/5 blur-xl rounded-full"></div>
-                        <Image
-                            src="/lumora_orb.png"
+                    <div className="mb-4 relative w-32 h-auto flex items-center justify-center drop-shadow-[0_0_15px_rgba(218,165,32,0.3)]">
+                        <img
+                            src="/lumora_logo.png"
                             alt="Lumora Logo"
-                            width={110}
-                            height={110}
-                            className="relative z-10 drop-shadow-[0_0_15px_rgba(34,197,94,0.4)] animate-pulse-slow mix-blend-screen object-cover scale-110"
+                            className="relative z-10 object-contain w-full h-auto"
                         />
                     </div>
                     <h1 className="text-2xl font-bold text-white tracking-widest">LUMORA</h1>

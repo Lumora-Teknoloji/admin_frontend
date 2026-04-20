@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
         }
 
         const userData = await res.json();
-        
+
         // Sıkı Yetki Kontrolü: Sadece belirlenen ADMIN hesaplarının paneli görmesine izin ver
         const allowedAdmins = (process.env.ADMIN_USERNAMES || 'admin,bedir').split(',');
         if (!userData || !userData.username || !allowedAdmins.includes(userData.username)) {

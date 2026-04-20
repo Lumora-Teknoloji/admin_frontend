@@ -205,7 +205,7 @@ export default function Home() {
             </div>
 
             <Link
-              href="/bots"
+              href="/agents"
               className="mt-8 bg-black text-white text-center py-4 rounded-2xl font-black uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all shadow-xl"
             >
               Yönetimi Başlat

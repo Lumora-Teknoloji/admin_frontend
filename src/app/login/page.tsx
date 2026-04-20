@@ -37,13 +37,13 @@ export default function LoginPage() {
             <div className="w-full max-w-md relative z-10">
                 {/* Logo Section */}
                 <div className="flex flex-col items-center mb-10">
-                    <div className="mb-6 relative h-28 w-28 rounded-full overflow-hidden shadow-[0_0_30px_rgba(16,185,129,0.3)] border-[4px] border-black/90 ring-1 ring-emerald-500/30 flex items-center justify-center bg-[#0b0c0f]">
+                    <div className="mb-6 relative w-48 h-auto flex items-center justify-center drop-shadow-[0_0_15px_rgba(218,165,32,0.3)]">
                         <Image
-                            src="/lumora_orb.png"
+                            src="/lumora_logo.png"
                             alt="Lumora Logo"
-                            width={120}
+                            width={240}
                             height={120}
-                            className="relative z-10 drop-shadow-[0_0_15px_rgba(34,197,94,0.5)] animate-pulse-slow mix-blend-screen object-cover scale-110"
+                            className="relative z-10 object-contain"
                         />
                     </div>
                     <h1 className="text-4xl font-black text-white tracking-[0.2em] animate-fade-in">LUMORA</h1>
