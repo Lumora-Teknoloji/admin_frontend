@@ -90,7 +90,7 @@ export interface SystemHealthResponse {
     };
 }
 
-export interface SystemHealth extends SystemHealthResponse {}
+export interface SystemHealth extends SystemHealthResponse { }
 
 export interface LiveProduct {
     id: number;
@@ -146,3 +146,17 @@ export interface ProductListResponse {
     page_size: number;
     total_pages: number;
 }
+
+export interface ProductCollection {
+    id: number;
+    name: string;
+    color: string;
+    icon: string;
+    product_count: number;
+}
+
+export interface ProductReaction {
+    product_id: number;
+    reaction: "like" | "dislike";
+}
+

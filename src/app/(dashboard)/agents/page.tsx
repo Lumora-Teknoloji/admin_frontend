@@ -10,18 +10,18 @@ import {
 
 // ─── Redis Bot satırı ─────────────────────────────────────────────────────────
 function RedisBotRow({ id, info }: { id: string; info: RedisBotsMap[string] }) {
-    const isActive   = info.status === "active";
-    const isWaiting  = info.status === "waiting";
-    const isStale    = info.last_seen_ago > 120;
+    const isActive = info.status === "active";
+    const isWaiting = info.status === "waiting";
+    const isStale = info.last_seen_ago > 120;
 
-    const dotColor = isStale   ? "bg-red-500"
-                   : isActive  ? "bg-emerald-500"
-                   : isWaiting ? "bg-yellow-400"
-                   :             "bg-gray-600";
+    const dotColor = isStale ? "bg-red-500"
+        : isActive ? "bg-emerald-500"
+            : isWaiting ? "bg-yellow-400"
+                : "bg-gray-600";
 
-    const scraped   = parseInt(info.scraped ?? "0");
-    const rate      = parseFloat(info.rate_per_min ?? "0");
-    const agoText   = info.last_seen_ago < 60
+    const scraped = parseInt(info.scraped ?? "0");
+    const rate = parseFloat(info.rate_per_min ?? "0");
+    const agoText = info.last_seen_ago < 60
         ? `${info.last_seen_ago}sn önce`
         : `${Math.round(info.last_seen_ago / 60)}dk önce`;
 
@@ -41,12 +41,11 @@ function RedisBotRow({ id, info }: { id: string; info: RedisBotsMap[string] }) {
             </div>
 
             {/* Status badge */}
-            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
-                isStale   ? "bg-red-500/10 text-red-400" :
-                isActive  ? "bg-emerald-500/10 text-emerald-400" :
-                isWaiting ? "bg-yellow-500/10 text-yellow-400" :
+            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${isStale ? "bg-red-500/10 text-red-400" :
+                    isActive ? "bg-emerald-500/10 text-emerald-400" :
+                        isWaiting ? "bg-yellow-500/10 text-yellow-400" :
                             "bg-gray-700/30 text-gray-500"
-            }`}>
+                }`}>
                 {isStale ? "STALE" : info.status.toUpperCase()}
             </span>
         </div>
@@ -55,8 +54,8 @@ function RedisBotRow({ id, info }: { id: string; info: RedisBotsMap[string] }) {
 
 // ─── Redis Queue Monitor Kartı ────────────────────────────────────────────────
 function RedisQueueMonitor() {
-    const [stats, setStats]   = useState<RedisQueueStats | null>(null);
-    const [bots, setBots]     = useState<RedisBotsMap>({});
+    const [stats, setStats] = useState<RedisQueueStats | null>(null);
+    const [bots, setBots] = useState<RedisBotsMap>({});
     const [loading, setLoading] = useState(true);
     const [recovering, setRecovering] = useState(false);
 
@@ -115,11 +114,11 @@ function RedisQueueMonitor() {
             {/* Queue Stats Grid */}
             <div className="grid grid-cols-5 gap-3 mb-6">
                 {[
-                    { label: "Bekleyen",    value: stats?.pending ?? 0,         icon: ListTodo,      color: "text-sky-400",     bg: "bg-sky-500/5",     border: "border-sky-500/15" },
-                    { label: "İşleniyor",   value: stats?.processing ?? 0,      icon: Loader2,       color: "text-amber-400",   bg: "bg-amber-500/5",   border: "border-amber-500/15" },
-                    { label: "Retry",       value: stats?.retry ?? 0,           icon: AlertTriangle, color: "text-orange-400",  bg: "bg-orange-500/5",  border: "border-orange-500/15" },
-                    { label: "Buffer",      value: stats?.results_buffer ?? 0,  icon: Database,      color: "text-purple-400",  bg: "bg-purple-500/5",  border: "border-purple-500/15" },
-                    { label: "Toplam",      value: stats?.scraped_total ?? 0,   icon: CheckCircle2,  color: "text-emerald-400", bg: "bg-emerald-500/5", border: "border-emerald-500/15" },
+                    { label: "Bekleyen", value: stats?.pending ?? 0, icon: ListTodo, color: "text-sky-400", bg: "bg-sky-500/5", border: "border-sky-500/15" },
+                    { label: "İşleniyor", value: stats?.processing ?? 0, icon: Loader2, color: "text-amber-400", bg: "bg-amber-500/5", border: "border-amber-500/15" },
+                    { label: "Retry", value: stats?.retry ?? 0, icon: AlertTriangle, color: "text-orange-400", bg: "bg-orange-500/5", border: "border-orange-500/15" },
+                    { label: "Buffer", value: stats?.results_buffer ?? 0, icon: Database, color: "text-purple-400", bg: "bg-purple-500/5", border: "border-purple-500/15" },
+                    { label: "Toplam", value: stats?.scraped_total ?? 0, icon: CheckCircle2, color: "text-emerald-400", bg: "bg-emerald-500/5", border: "border-emerald-500/15" },
                 ].map(({ label, value, icon: Icon, color, bg, border }) => (
                     <div key={label} className={`rounded-xl ${bg} border ${border} p-3`}>
                         <div className="flex items-center gap-1.5 mb-1.5">
@@ -173,9 +172,7 @@ export default function AgentsPage() {
     const [copiedUrl, setCopiedUrl] = useState(false);
 
     const secretKey = process.env.NEXT_PUBLIC_AGENT_SECRET || "Tanımlanmamış (.env.local'i kontrol edin)";
-    const apiUrl = typeof window !== "undefined" 
-        ? window.location.origin.replace(":3001", ":8000") + "/api" 
-        : "http://localhost:8000/api";
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
     const copyToClipboard = (text: string, type: 'sec' | 'url') => {
         navigator.clipboard.writeText(text);
@@ -230,8 +227,8 @@ export default function AgentsPage() {
             {/* Setup Info Modal */}
             {showSetupInfo && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div 
-                        className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
+                    <div
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
                         onClick={() => setShowSetupInfo(false)}
                     />
                     <div className="relative z-10 w-full max-w-lg bg-[#0a0d14] rounded-2xl border border-gray-700/50 shadow-2xl p-6">
@@ -268,7 +265,7 @@ export default function AgentsPage() {
                                 </div>
                                 <p className="text-[10px] text-gray-500 mt-2">Bu şifreyi değiştirmek istersen backend ve frontend konfigürasyon (<code>.env</code>) dosyalarından manuel değiştirmen gerekir.</p>
                             </div>
-                            
+
                             <div className="pt-2">
                                 <p className="text-xs text-justify leading-relaxed text-gray-400 p-3 bg-indigo-500/5 rounded-lg border border-indigo-500/10">
                                     <strong className="text-indigo-400 font-bold">Nasıl Kullanılır: </strong>
