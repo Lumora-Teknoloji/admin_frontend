@@ -6,6 +6,7 @@ export async function request<T>(endpoint: string, options: RequestInit = {}): P
     const headers: Record<string, string> = {
         ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
         ...(options.headers as Record<string, string> || {}),
+        'x-agent-secret': process.env.NEXT_PUBLIC_AGENT_SECRET || '',
     };
 
     const res = await fetch(`${API_URL}${endpoint}`, {
