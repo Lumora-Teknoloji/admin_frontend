@@ -42,9 +42,9 @@ function RedisBotRow({ id, info }: { id: string; info: RedisBotsMap[string] }) {
 
             {/* Status badge */}
             <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${isStale ? "bg-red-500/10 text-red-400" :
-                    isActive ? "bg-emerald-500/10 text-emerald-400" :
-                        isWaiting ? "bg-yellow-500/10 text-yellow-400" :
-                            "bg-gray-700/30 text-gray-500"
+                isActive ? "bg-emerald-500/10 text-emerald-400" :
+                    isWaiting ? "bg-yellow-500/10 text-yellow-400" :
+                        "bg-gray-700/30 text-gray-500"
                 }`}>
                 {isStale ? "STALE" : info.status.toUpperCase()}
             </span>
@@ -171,8 +171,21 @@ export default function AgentsPage() {
     const [copiedSec, setCopiedSec] = useState(false);
     const [copiedUrl, setCopiedUrl] = useState(false);
 
-    const secretKey = process.env.NEXT_PUBLIC_AGENT_SECRET || "Tanımlanmamış (.env.local'i kontrol edin)";
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+    const [secretKey, setSecretKey] = useState("Yükleniyor...");
+    const [apiUrl, setApiUrl] = useState("Yükleniyor...");
+
+    useEffect(() => {
+        fetch('/api/config')
+            .then(res => res.json())
+            .then(data => {
+                setSecretKey(data.agentSecret || "Tanımlanmamış (.env.local'i kontrol edin)");
+                setApiUrl(data.apiUrl || "http://localhost:8000/api");
+            })
+            .catch(() => {
+                setSecretKey("Hata oluştu");
+                setApiUrl("Hata oluştu");
+            });
+    }, []);
 
     const copyToClipboard = (text: string, type: 'sec' | 'url') => {
         navigator.clipboard.writeText(text);
