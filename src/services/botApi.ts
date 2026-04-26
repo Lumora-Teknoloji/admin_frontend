@@ -56,7 +56,7 @@ export const botApi = {
 
     // Delete a bot
     deleteBot: (id: number) =>
-        request<{ success: boolean; message: string; detail?: string }>(`/scraper/bots/${id}`, { method: "DELETE" })
+        request<{ success: boolean; message: string; detail?: string }>(`/scraper/tasks/${id}`, { method: "DELETE" })
             .then(result => ({ success: true, message: "Bot silindi" })) // Request helper throws on error, so success is implicit here or caught by caller
             .catch(err => ({ success: false, message: err.message })),
 
