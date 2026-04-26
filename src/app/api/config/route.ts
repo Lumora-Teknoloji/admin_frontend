@@ -4,13 +4,18 @@ import fs from 'fs';
 import path from 'path';
 
 export async function GET() {
+    // Primary: process.env (Docker ARG / runtime env — always available)
     let agentSecret = process.env.AGENT_SECRET || process.env.NEXT_PUBLIC_AGENT_SECRET || "Tanımlanmamış";
-    let backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
-    let apiUrl = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || `${backendUrl}/api`;
+    let backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/$/, '') || "http://localhost:8000";
+    let apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '') || process.env.API_URL || `${backendUrl}/api`;
+
+    // Ensure apiUrl ends with /api
+    if (!apiUrl.endsWith('/api')) {
+        apiUrl = `${apiUrl}/api`;
+    }
 
     try {
-        // Next.js dev server'ı veya build edilmiş hali olsa bile 
-        // diske yazılan güncel .env.local dosyasından okumak için:
+        // Secondary override: .env.local file on disk (development only)
         const envPath = path.join(process.cwd(), '.env.local');
         if (fs.existsSync(envPath)) {
             const content = fs.readFileSync(envPath, 'utf8');
@@ -24,7 +29,7 @@ export async function GET() {
             } else {
                 const backendMatch = content.match(/NEXT_PUBLIC_BACKEND_URL\s*=\s*(.*)/);
                 if (backendMatch && backendMatch[1]) {
-                    let base = backendMatch[1].trim();
+                    let base = backendMatch[1].trim().replace(/\/$/, '');
                     apiUrl = base.endsWith('/api') ? base : `${base}/api`;
                 }
             }
