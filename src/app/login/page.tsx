@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+
 import { useRouter } from "next/navigation";
 import { Lock, User, ShieldCheck, ArrowRight } from "lucide-react";
 import { authApi } from "@/lib/api";
@@ -38,7 +38,7 @@ export default function LoginPage() {
                 {/* Logo Section */}
                 <div className="flex flex-col items-center mb-10">
                     <div className="mb-6 relative w-48 h-auto flex items-center justify-center drop-shadow-[0_0_15px_rgba(218,165,32,0.3)]">
-                        <Image
+                        <img
                             src="/lumora_logo.png"
                             alt="Lumora Logo"
                             width={240}

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, ScrollText, Settings, LogOut, Disc, Package, Monitor } from "lucide-react"; // Updated icons
 import { cn } from "@/lib/utils";
