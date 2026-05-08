@@ -46,7 +46,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
 }
 
-// Routes to protect
+// Routes to protect - exclude login, _next, api, and static files
 export const config = {
-    matcher: ['/((?!login|_next|api).*)'],
+    matcher: ['/((?!login|_next|api|.*\\.png$|.*\\.jpg$|.*\\.jpeg$|.*\\.gif$|.*\\.svg$|.*\\.ico$|.*\\.webp$|assets).*)'],
 };
