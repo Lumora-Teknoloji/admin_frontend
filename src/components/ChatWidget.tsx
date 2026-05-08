@@ -38,8 +38,10 @@ export default function ChatWidget() {
     // CRITICAL: Socket.IO runs in the BROWSER, not in Docker.
     // NEXT_PUBLIC_API_URL is baked at build-time as "http://backend:8000/api" inside Docker,
     // which the browser cannot resolve. We must use the browser's own hostname.
-    const hostname = typeof window !== "undefined" ? window.location.hostname : "localhost";
-    const SOCKET_URL = `http://${hostname}:8000`;
+    // Use current page protocol & hostname - backend is proxied via ingress at /socket.io
+    const SOCKET_URL = typeof window !== "undefined"
+      ? `${window.location.protocol}//${window.location.hostname}`
+      : "http://localhost:8000";
     
     const newSocket = io(SOCKET_URL, {
       withCredentials: true,
